@@ -1,9 +1,9 @@
 import json
 import os
-import random
 import datetime
 import re
 import logging
+import socket
 
 from config_enum import ConfigEnum
 
@@ -74,7 +74,7 @@ broker = os.environ.get(ConfigEnum.mqtt_broker_host.value) \
 port = int(os.environ.get(ConfigEnum.mqtt_broker_port.value)) \
     if os.environ.get(ConfigEnum.mqtt_broker_port.value) else 1883
 client_id = os.environ.get(ConfigEnum.mqtt_client_id.value) \
-    if os.environ.get(ConfigEnum.mqtt_client_id.value) else f'deepexi-{random.randint(1, 1000)}'
+    if os.environ.get(ConfigEnum.mqtt_client_id.value) else f"{socket.gethostname()}-{os.getuid()}"
 
 user_name = os.environ.get(ConfigEnum.mqtt_user_name.value)
 password = os.environ.get(ConfigEnum.mqtt_password.value)
@@ -82,7 +82,6 @@ password = os.environ.get(ConfigEnum.mqtt_password.value)
 bootstrap_server = os.environ.get(ConfigEnum.bootstrap_server.value) \
     if os.environ.get(ConfigEnum.bootstrap_server.value) else '127.0.0.1:9092'
 
-# 订阅的topic: `mqtt_topic:kafka_topic`
 topic_mapping = os.environ.get(ConfigEnum.topic_mapping.value) \
     if os.environ.get(ConfigEnum.topic_mapping.value) else '$SYS/#:mqtt'
 
