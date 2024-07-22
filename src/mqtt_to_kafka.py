@@ -51,7 +51,6 @@ def on_message(client, userdata, msg: mqtt.MQTTMessage):
                 producer.send(kk_topic, key=msg.topic.encode(), value=kafka_value)
                 logger.info(f'(kafka) {mq_topic} -> {kk_topic}: {kafka_msg}')
     except NoBrokersAvailable:
-        # logger.error(f"kafka broker not available: {bootstrap_server}")
         # 若kafka broker不可用，仅打印mqtt的消息日志
         logger.info(f"(mqtt) {msg.topic}: {msg.payload.decode()}")
 
@@ -86,9 +85,6 @@ topic_mapping = os.environ.get(ConfigEnum.topic_mapping.value) \
     if os.environ.get(ConfigEnum.topic_mapping.value) else '$SYS/#:mqtt'
 
 # TODO: 做测试用，正式环境需删除
-# broker = 'mqtt.eclipseprojects.io'
-# topic_mapping = '$SYS/#:mqtt'
 # bootstrap_server = "172.20.3.26:9094"
-
 
 run()
