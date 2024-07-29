@@ -14,7 +14,7 @@ docker build \
 # 运行
 docker run \
 --name mqtt-to-kafka \
--e MQTT_CLIENT_ID="deepexi-test" \
+-e MQTT_CLIENT_ID="mqtt-client-01" \
 -e MQTT_BROKER_HOST="mqtt.eclipseprojects.io" \
 -e MQTT_BROKER_PORT=1883 \
 -e MQTT_USER_NAME="admin" \
