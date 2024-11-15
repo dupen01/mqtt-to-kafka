@@ -13,7 +13,7 @@ from paho.mqtt import client as mqtt
 
 
 # set logger
-logger = logging.getLogger('test-name')
+logger = logging.getLogger('mqtt')
 logger.setLevel(level=logging.INFO)
 formatter = logging.Formatter('%(message)s')
 console_handler = logging.StreamHandler()
@@ -69,9 +69,11 @@ def run():
 
 
 broker = os.environ.get(ConfigEnum.mqtt_broker_host.value) \
-    if os.environ.get(ConfigEnum.mqtt_broker_host.value) else 'mqtt.eclipseprojects.io'
+        if os.environ.get(ConfigEnum.mqtt_broker_host.value) else 'mqtt.eclipseprojects.io'
+
 port = int(os.environ.get(ConfigEnum.mqtt_broker_port.value)) \
     if os.environ.get(ConfigEnum.mqtt_broker_port.value) else 1883
+
 client_id = os.environ.get(ConfigEnum.mqtt_client_id.value) \
     if os.environ.get(ConfigEnum.mqtt_client_id.value) else f"{socket.gethostname()}-{os.getuid()}"
 
@@ -79,12 +81,13 @@ user_name = os.environ.get(ConfigEnum.mqtt_user_name.value)
 password = os.environ.get(ConfigEnum.mqtt_password.value)
 
 bootstrap_server = os.environ.get(ConfigEnum.bootstrap_server.value) \
-    if os.environ.get(ConfigEnum.bootstrap_server.value) else '127.0.0.1:9092'
+if os.environ.get(ConfigEnum.bootstrap_server.value) else '127.0.0.1:9092'
 
 topic_mapping = os.environ.get(ConfigEnum.topic_mapping.value) \
     if os.environ.get(ConfigEnum.topic_mapping.value) else '$SYS/#:mqtt'
 
 # TODO: 做测试用，正式环境需删除
 # bootstrap_server = "172.20.3.26:9094"
+
 
 run()
