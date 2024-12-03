@@ -5,11 +5,12 @@ import re
 import logging
 import socket
 
-from config_enum import ConfigEnum
+from config_enum import ClientConfig
 
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
 from paho.mqtt import client as mqtt
+from paho.mqtt.enums import CallbackAPIVersion
 
 
 # set logger
@@ -21,7 +22,7 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 
-def on_connect(client: mqtt.Client, userdata, flags, reason_code, properties):
+def on_connect(client: mqtt.Client, userdata, flags, reason_code, properties) -> None:
     if reason_code == 0:
         logger.info(f"Connected to MQTT Broker: {broker}:{port}")
     else:
@@ -30,7 +31,7 @@ def on_connect(client: mqtt.Client, userdata, flags, reason_code, properties):
         client.subscribe(x.split(':')[0])
 
 
-def on_message(client, userdata, msg: mqtt.MQTTMessage):
+def on_message(client, userdata, msg: mqtt.MQTTMessage) -> None:
     # 定义发送到kafka的消息格式
     kafka_msg = {}
     kafka_msg.setdefault('topic', msg.topic)
@@ -55,12 +56,12 @@ def on_message(client, userdata, msg: mqtt.MQTTMessage):
         logger.info(f"(mqtt) {msg.topic}: {msg.payload.decode()}")
 
 
-def run():
+def run() -> None:
     logger.info(f"mqtt_broker: {broker}:{port}")
     logger.info(f"mqtt_client_id: {client_id}")
     logger.info(f"bootstrap_server: {bootstrap_server}")
     logger.info(f"topic_mapping: {topic_mapping}")
-    mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=client_id)
+    mqttc = mqtt.Client(CallbackAPIVersion.VERSION2, client_id=client_id)
     mqttc.username_pw_set(username=user_name, password=password)
     mqttc.on_connect = on_connect
     mqttc.on_message = on_message
@@ -68,26 +69,37 @@ def run():
     mqttc.loop_forever()
 
 
-broker = os.environ.get(ConfigEnum.mqtt_broker_host.value) \
-        if os.environ.get(ConfigEnum.mqtt_broker_host.value) else 'mqtt.eclipseprojects.io'
+if env_broker := os.environ.get(ClientConfig.MQTT_BROKER_HOST.value):
+    broker = env_broker
+else:
+    broker = 'mqtt.eclipseprojects.io'
 
-port = int(os.environ.get(ConfigEnum.mqtt_broker_port.value)) \
-    if os.environ.get(ConfigEnum.mqtt_broker_port.value) else 1883
+if env_port := os.environ.get(ClientConfig.MQTT_BROKER_PORT.value):
+    try:
+        port = int(env_port)
+    except ValueError:
+        raise ValueError("The environment variable 'MQTT_BROKER_PORT' is not a valid integer.")
+else:
+    port = 1883
 
-client_id = os.environ.get(ConfigEnum.mqtt_client_id.value) \
-    if os.environ.get(ConfigEnum.mqtt_client_id.value) else f"{socket.gethostname()}-{os.getuid()}"
+if env_client_id := os.environ.get(ClientConfig.MQTT_CLIENT_ID.value):
+    client_id = env_client_id
+else:
+    client_id = f"{socket.gethostname()}-{os.getuid()}"
 
-user_name = os.environ.get(ConfigEnum.mqtt_user_name.value)
-password = os.environ.get(ConfigEnum.mqtt_password.value)
+user_name = os.environ.get(ClientConfig.MQTT_USER_NAME.value)
+password = os.environ.get(ClientConfig.MQTT_USER_NAME.value)
 
-bootstrap_server = os.environ.get(ConfigEnum.bootstrap_server.value) \
-if os.environ.get(ConfigEnum.bootstrap_server.value) else '127.0.0.1:9092'
+if env_bootstrap_server := os.environ.get(ClientConfig.BOOTSTRAP_SERVER.value):
+    bootstrap_server = env_bootstrap_server
+else:
+    bootstrap_server = '127.0.0.1:9092'
 
-topic_mapping = os.environ.get(ConfigEnum.topic_mapping.value) \
-    if os.environ.get(ConfigEnum.topic_mapping.value) else '$SYS/#:mqtt'
+if env_topic_mapping := os.environ.get(ClientConfig.TOPIC_MAPPING.value):
+    topic_mapping = env_topic_mapping
+else:
+    topic_mapping = '$SYS/#:mqtt'
+    
 
-# TODO: 做测试用，正式环境需删除
-# bootstrap_server = "172.20.3.26:9094"
-
-
+# main 方法
 run()

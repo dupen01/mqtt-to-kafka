@@ -1,9 +1,10 @@
-FROM python:3.9-slim-bullseye
+# FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+FROM registry.cn-chengdu.aliyuncs.com/mirror_d/uv:python3.13-bookworm-slim
 
+COPY src /app/src
+COPY pyproject.toml uv.lock /app/
 
-COPY ./requirements.txt /code/requirements.txt
-RUN pip install --no-cache-dir -r /code/requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+WORKDIR /app 
+RUN uv sync --default-index https://mirrors.aliyun.com/pypi/simple/ --frozen
 
-COPY src/ /code/src/
-
-CMD ["python3", "/code/src/mqtt_to_kafka.py"]
+CMD ["uv", "run", "src/mqtt_to_kafka.py"]

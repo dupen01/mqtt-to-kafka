@@ -1,11 +1,11 @@
 from enum import Enum
 
 
-class ConfigEnum(Enum):
-    mqtt_broker_host = "MQTT_BROKER_HOST"
-    mqtt_broker_port = "MQTT_BROKER_PORT"
-    mqtt_client_id = "MQTT_CLIENT_ID"
-    mqtt_user_name = "MQTT_USER_NAME"
-    mqtt_password = "MQTT_PASSWORD"
-    bootstrap_server = "BOOTSTRAP_SERVER"
-    topic_mapping = "TOPIC_MAPPING"
+class ClientConfig(Enum):
+    MQTT_BROKER_HOST = "MQTT_BROKER_HOST"
+    MQTT_BROKER_PORT = "MQTT_BROKER_PORT"
+    MQTT_CLIENT_ID = "MQTT_CLIENT_ID"
+    MQTT_USER_NAME = "MQTT_USER_NAME"
+    MQTT_PASSWORD = "MQTT_PASSWORD"
+    BOOTSTRAP_SERVER = "BOOTSTRAP_SERVER"
+    TOPIC_MAPPING = "TOPIC_MAPPING"

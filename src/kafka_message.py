@@ -2,26 +2,29 @@ import time
 
 
 class IntervalQueue:
-    def __init__(self, interval=10):
-        self.first_put_time = None
+    """
+    创建一个“时间”队列，指定这个队列只包含固定时长（interval）的数据.
+    每次调用get方法时获取这个队列
+    """
+    def __init__(self, interval=10) -> None:
         self.interval = interval
         self.item_lst = []
 
-    def put(self, item):
+    def put(self, item) -> None:
         if self.size() > 0:
             self.first_put_time = self.item_lst[0][1]
         self.item_lst.append((item, int(time.time())))
 
-    def get(self):
-        last_item = list(filter(self.filter_f, self.item_lst))[-1][0]
+    def get(self) -> list:
+        last_item = list(filter(self.__filter_f, self.item_lst))[-1][0]
         self.item_lst = []
         return last_item
 
-    def filter_f(self, item_tuple: tuple):
+    def __filter_f(self, item_tuple: tuple) -> bool:
         item_time = item_tuple[1]
         return item_time < self.first_put_time + self.interval
 
-    def size(self):
+    def size(self) -> int:
         return len(self.item_lst)
 
 
